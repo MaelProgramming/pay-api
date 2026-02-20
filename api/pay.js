@@ -31,8 +31,14 @@ export default async function handler(req, res) {
   const { userId, amount } = req.body;
 
   // Check si les données sont là (et si amount est un chiffre)
-  if (!userId || isNaN(amount)) {
-    return res.status(400).json({ error: 'Datos invalidos' });
+  const numericAmount = parseFloat(amount);
+
+  // Check : userId existe ET numericAmount est un nombre valide ET numericAmount > 0
+  if (!userId || isNaN(numericAmount) || numericAmount <= 0) {
+    return res.status(400).json({ 
+      error: 'Datos invalidos', 
+      details: `userId: ${userId}, amount: ${amount}` 
+    });
   }
 
   const userRef = db.collection('users').doc(userId);
@@ -56,4 +62,5 @@ export default async function handler(req, res) {
   } catch (e) {
     return res.status(400).json({ error: e.message });
   }
+
 }
